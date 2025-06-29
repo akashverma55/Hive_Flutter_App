@@ -16,7 +16,7 @@ A Flutter application demonstrating the use of Hive database for local data stor
 ## Screenshots
 
 ### Main Interface
-
+![image](https://github.com/user-attachments/assets/b8daeb15-6761-479a-8782-d9678292c431)
 
 ## Technologies Used
 
@@ -46,7 +46,7 @@ dependencies:
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repository-url>
+   git clone https://github.com/akashverma55/Hive_Flutter_App.git
    cd hive_demoapp
    ```
 
@@ -78,8 +78,6 @@ lib/
 assets/
 ├── images/
     └── bg.png         # Background image (optional)
-screenshots/
-└── app_ui.png         # App screenshot (add your own)
 ```
 
 ## How It Works
