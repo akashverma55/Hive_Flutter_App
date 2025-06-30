@@ -15,14 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MyHomePage(), // Added const
+      home: MyHomePage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key}); // Added const constructor
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -31,44 +31,42 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
-  final mybox = Hive.box("MyBox"); // Made final
+  final mybox = Hive.box("MyBox");
   List mydata = [];
   int? selectedKey;
 
   @override
   void initState() {
     super.initState();
-    _getItem(); // Made private
+    getItem();
   }
 
-  Future<void> _addItem(Map<String, dynamic> data) async {
-    // Made private and typed
+  Future<void> addItem(Map<String, dynamic> data) async {
+    //data will come in key:value format
     await mybox.add(data);
-    _getItem();
+    getItem();
   }
 
-  Future<void> _deleteItem(dynamic key) async {
-    // Made private
+  Future<void> deleteItem(dynamic key) async {
     await mybox.delete(key);
-    _getItem();
+    getItem();
   }
 
-  Future<void> _updateItem(
-    dynamic key,
-    Map<String, dynamic> updatedData,
-  ) async {
-    // Made private and typed
+  Future<void> updateItem(dynamic key, Map<String, dynamic> updatedData) async {
     await mybox.put(key, updatedData);
-    _getItem();
+    getItem();
   }
 
-  void _getItem() {
-    // Made private
+  // Hive Data                                              Mydata
+  // {                                                       [
+  // 0: {'title': 'Apple', 'price': '20'},                      {'Key': 0, 'title': 'Apple', 'price': '20'},
+  // 1: {'title': 'Banana', 'price': '10'},                     {'key': 1, 'title': 'Banana', 'price': '10'}
+  // }                                                       ]
+  void getItem() {
     setState(() {
       mydata = mybox.keys
           .map(
             (e) => {
-              // Simplified
               'Key': e,
               'title': mybox.get(e)['title'] ?? '',
               'price': mybox.get(e)['price'] ?? '',
@@ -78,30 +76,27 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _handleEdit(int key, String title, String price) {
-    // Made private
-    setState(() {
-      selectedKey = key;
-      nameController.text = title;
-      priceController.text = price;
-    });
-  }
+  // void handleEdit(int key, String title, String price) {
+  //   setState(() {
+  //     selectedKey = key;
+  //     nameController.text = title;
+  //     priceController.text = price;
+  //   });
+  // }
 
-  void _clearForm() {
-    // Made private
-    setState(() {
-      selectedKey = null;
-      nameController.clear();
-      priceController.clear();
-    });
-  }
+  // void clearForm() {
+  //   setState(() {
+  //     selectedKey = null;
+  //     nameController.clear();
+  //     priceController.clear();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          // Added const
           image: DecorationImage(
             image: AssetImage('assets/images/bg.png'),
             fit: BoxFit.cover,
@@ -119,10 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 border: Border.all(width: 4, color: Colors.tealAccent),
               ),
               child: const Center(
-                // Added const
                 child: Text(
-                  // Added const
-                  "--:Hive Database:--",
+                  "--:Hive Database App:--",
                   style: TextStyle(
                     color: Colors.tealAccent,
                     fontSize: 30,
@@ -131,9 +124,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 100), // Added const
+            const SizedBox(height: 100),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20), // Added const
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
@@ -147,7 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 controller: nameController,
                 style: const TextStyle(
-                  // Added const
                   color: Color.fromARGB(255, 0, 80, 75),
                   fontWeight: FontWeight.bold,
                 ),
@@ -172,8 +164,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height: 20),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20), // Added const
-              decoration:BoxDecoration(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
@@ -182,15 +174,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     blurRadius: 10,
                   ),
                 ],
-              ), // Reused constant
+              ),
               child: TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ], // Added const
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 style: const TextStyle(
-                  // Added const
                   color: Color.fromARGB(255, 0, 80, 75),
                   fontWeight: FontWeight.bold,
                 ),
@@ -217,34 +206,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 20), 
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Padding(
-                  padding:const EdgeInsets.symmetric(vertical: 10), 
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   child: ElevatedButton.icon(
                     onPressed: () {
                       if (nameController.text.trim().isNotEmpty &&
                           priceController.text.trim().isNotEmpty) {
                         final Map<String, dynamic> m1 = {
-                          // Added type
                           "title": nameController.text,
                           "price": priceController.text,
                         };
 
                         if (selectedKey != null) {
-                          _updateItem(selectedKey, m1);
+                          updateItem(selectedKey, m1);
                         } else {
-                          _addItem(m1);
+                          addItem(m1);
                         }
-                        _clearForm();
+                        setState(() {
+                          selectedKey = null;
+                          nameController.clear();
+                          priceController.clear();
+                        });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            // Added const
                             content: Text(
-                              // Added const
                               "Please fill in both fields",
                               style: TextStyle(
                                 color: Colors.red,
@@ -262,7 +252,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       elevation: 5,
                       shadowColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        // Added const
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -271,10 +260,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       size: 20,
                     ),
                     label: Padding(
-                      padding:const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Text(
                         selectedKey != null ? "Update" : "Save",
-                        style: const TextStyle(fontSize: 18), // Added const
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
@@ -282,32 +271,37 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 if (selectedKey != null)
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10), // Reused constant
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: ElevatedButton.icon(
-                      onPressed: _clearForm,
+                      onPressed: () {
+                        setState(() {
+                          selectedKey = null;
+                          nameController.clear();
+                          priceController.clear();
+                        });
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[900],
                         foregroundColor: Colors.teal[50],
                         elevation: 5,
                         shadowColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          // Added const
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      icon: const Icon(Icons.cancel, size: 20), // Added const
+                      icon: const Icon(Icons.cancel, size: 20),
                       label: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10), // Reused constant
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         child: const Text(
                           "Cancel",
                           style: TextStyle(fontSize: 18),
-                        ), // Added const
+                        ),
                       ),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 20), // Added const
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
@@ -318,7 +312,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: Text(
                       "${mydata[index]['title']}",
                       style: const TextStyle(
-                        // Added const
                         fontWeight: FontWeight.bold,
                         color: Colors.tealAccent,
                       ),
@@ -326,32 +319,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     subtitle: Text(
                       "${mydata[index]['price']}",
                       style: const TextStyle(
-                        // Added const
                         fontWeight: FontWeight.bold,
                         color: Colors.tealAccent,
                       ),
                     ),
                     leading: IconButton(
                       onPressed: () {
-                        _handleEdit(
-                          mydata[index]['Key'],
-                          mydata[index]['title'],
-                          mydata[index]['price'],
-                        );
+                        setState(() {
+                          selectedKey = mydata[index]['Key'];
+                          nameController.text = mydata[index]['title'];
+                          priceController.text = mydata[index]['price'];
+                        });
                       },
-                      icon: const Icon(
-                        Icons.edit,
-                        color: Colors.tealAccent,
-                      ), // Added const
+                      icon: const Icon(Icons.edit, color: Colors.tealAccent),
                     ),
                     trailing: IconButton(
                       onPressed: () {
-                        _deleteItem(mydata[index]['Key']);
+                        deleteItem(mydata[index]['Key']);
                       },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.tealAccent,
-                      ), // Added const
+                      icon: const Icon(Icons.delete, color: Colors.tealAccent),
                     ),
                   );
                 },
